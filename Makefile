@@ -2,6 +2,8 @@ LINTER_BIN ?= golangci-lint
 
 GO111MODULE := on
 export GO111MODULE
+export GOOS ?= linux
+export GOARCH ?= amd64
 
 .PHONY: build
 build: bin/virtual-kubelet
@@ -37,4 +39,4 @@ bin/virtual-kubelet: BUILD_DATE             ?= $(shell date -u '+%Y-%m-%d-%H:%M 
 bin/virtual-kubelet: VERSION_FLAGS    := -ldflags='-X "main.buildVersion=$(BUILD_VERSION)" -X "main.buildTime=$(BUILD_DATE)"'
 
 bin/%:
-	CGO_ENABLED=0 go build -ldflags '-extldflags "-static"' -o bin/$(*) $(VERSION_FLAGS) ./cmd/$(*)
+	CGO_ENABLED=0 GOARCH=$(GOARCH) GOOS=$(GOOS) go build -ldflags '-extldflags "-static"' -o bin/$(*) $(VERSION_FLAGS) ./cmd/$(*)
